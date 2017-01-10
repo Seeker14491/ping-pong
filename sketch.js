@@ -1,36 +1,51 @@
 function setup() {
-  TOP_COLOR = color("#233237"); // gunmetal
-  BOTTOM_COLOR = color("#984b43"); // rusty red
-  WHITE = color(255, 255, 255);
+  COLOR_1 = color("#233237"); // gunmetal
+  COLOR_2 = color("#984b43"); // rusty red
+  WHITE = color("#ffffff");
   
   createCanvas(windowWidth, windowHeight)
   noStroke();
   textAlign(CENTER, CENTER);
   textSize(96);
   
-  top_score = 0;
-  bottom_score = 0;
+  score_1 = 0;
+  score_2 = 0;
 }
 
 function draw() {
-  // top half
-  fill(TOP_COLOR);
-  rect(0, 0, width, 0.5 * height);
-  fill(WHITE);
-  text(top_score.toString(), 0.5 * width, 0.25 * height);
+  // score_1 background
+  fill(COLOR_1);
+  if (height > width) {
+    rect(0, 0, width, 0.5 * height);
+  } else {
+    rect(0, 0, 0.5 * width, height);
+  }
+  // score_2 background
+  fill(COLOR_2);
+  if (height > width) {
+    rect(0, 0.5 * height, width, 0.5 * height);
+  } else {
+    rect(0.5 * width, 0, 0.5 * width, height);
+  }
   
-  // bottom half
-  fill(BOTTOM_COLOR);
-  rect(0, 0.5 * height, width, 0.5 * height);
+  // scores
   fill(WHITE);
-  text(bottom_score.toString(), 0.5 * width, 0.75 * height);
+  if (height > width) {
+    text(score_1.toString(), 0.5 * width, 0.25 * height);
+    text(score_2.toString(), 0.5 * width, 0.75 * height);
+  } else {
+    text(score_1.toString(), 0.25 * width, 0.5 * height);
+    text(score_2.toString(), 0.75 * width, 0.5 * height);
+  }
 }
 
 function mousePressed() {
-  if (mouseY < 0.5 * height) {
-    ++top_score;
+  var score_1_clicked = (height > width) ? (mouseY < 0.5 * height) : (mouseX < 0.5 * width);
+  
+  if (score_1_clicked) {
+    ++score_1;
   } else {
-    ++bottom_score;
+    ++score_2;
   }
 }
 
