@@ -1,7 +1,7 @@
 function setup() {
   COLOR_1 = color("#233237"); // gunmetal
   COLOR_2 = color("#984b43"); // rusty red
-  WHITE = color("#ffffff");
+  RESET_SYMBOL = "↻";
   
   createCanvas(windowWidth, windowHeight)
   noStroke();
@@ -10,6 +10,7 @@ function setup() {
   
   score_1 = 0;
   score_2 = 0;
+  reset_button_diameter = 0;
 }
 
 function draw() {
@@ -29,7 +30,8 @@ function draw() {
   }
   
   // scores
-  fill(WHITE);
+  fill(255);
+  textSize(0.375 * min(width, height));
   if (height > width) {
     text(score_1.toString(), 0.5 * width, 0.25 * height);
     text(score_2.toString(), 0.5 * width, 0.75 * height);
@@ -37,15 +39,29 @@ function draw() {
     text(score_1.toString(), 0.25 * width, 0.5 * height);
     text(score_2.toString(), 0.75 * width, 0.5 * height);
   }
+  
+  // reset button
+  textSize(0.0625 * max(width, height));
+  reset_button_diameter = 1.25 * textWidth(RESET_SYMBOL);
+  fill(255);
+  ellipse(0.5 * width, 0.5 * height, reset_button_diameter);
+  fill(0);
+  text(RESET_SYMBOL, 0.5 * width, 0.5 * height)
 }
 
 function mousePressed() {
-  var score_1_clicked = (height > width) ? (mouseY < 0.5 * height) : (mouseX < 0.5 * width);
-  
-  if (score_1_clicked) {
-    ++score_1;
+  if (dist(mouseX, mouseY, 0.5 * width, 0.5 * height) < 0.5 * reset_button_diameter) {
+    // reset button clicked
+    score_1 = 0;
+    score_2 = 0;
   } else {
-    ++score_2;
+    var score_1_clicked = (height > width) ? (mouseY < 0.5 * height) : (mouseX < 0.5 * width);
+  
+    if (score_1_clicked) {
+      ++score_1;
+    } else {
+      ++score_2;
+    }
   }
 }
 
