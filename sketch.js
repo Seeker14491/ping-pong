@@ -30,10 +30,12 @@ function draw() {
   // serve indicator
   push();
   blendMode(LIGHTEST);
+  var total_score = score_1 + score_2;
+  var serve_indicator_pos = serve_turn != ((floor(total_score / 2) % 2) === 0);
   if (height > width) {
-    serve_turn ? image(serve_indicator, 0, 0, width, 0.5 * height) : image(serve_indicator, 0, 0.5 * height);
+    serve_indicator_pos ? image(serve_indicator, 0, 0, width, 0.5 * height) : image(serve_indicator, 0, 0.5 * height);
   } else {
-    serve_turn ? image(serve_indicator, 0, 0) : image(serve_indicator, 0.5 * width, 0);
+    serve_indicator_pos ? image(serve_indicator, 0, 0) : image(serve_indicator, 0.5 * width, 0);
   }
   pop();
   
@@ -61,16 +63,16 @@ function draw() {
 function mousePressed() {
   if (dist(mouseX, mouseY, 0.5 * width, 0.5 * height) < 0.5 * reset_button_diameter) {
     // reset button clicked
-    score_1 = 0;
-    score_2 = 0;
+    if (score_1 + score_2 === 0) {
+      serve_turn = !serve_turn;
+    } else {
+      score_1 = 0;
+      score_2 = 0;
+    }
   } else {
     var score_1_clicked = (height > width) ? (mouseY < 0.5 * height) : (mouseX < 0.5 * width);
   
     score_1_clicked ? ++score_1 : ++score_2;
-    
-    if ((score_1 + score_2) % 2 === 0) {
-      serve_turn = !serve_turn;
-    }
   }
 }
 
