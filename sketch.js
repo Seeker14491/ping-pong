@@ -6,32 +6,36 @@ function setup() {
   COLOR_1 = color("#233237"); // gunmetal
   COLOR_2 = color("#984b43"); // rusty red
   
-  createCanvas(windowWidth, windowHeight)
+  createCanvas(windowWidth, windowHeight);
   noStroke();
   textAlign(CENTER, CENTER);
-  textSize(96);
-  imageMode(CENTER);
   
   score_1 = 0;
   score_2 = 0;
   reset_button_diameter = 0;
+  serve_turn = true;
+  
+  serve_indicator = createGraphics(1, 1);
+  windowResized();
 }
 
 function draw() {
   // score_1 background
   fill(COLOR_1);
-  if (height > width) {
-    rect(0, 0, width, 0.5 * height);
-  } else {
-    rect(0, 0, 0.5 * width, height);
-  }
+  (height > width) ? rect(0, 0, width, 0.5 * height) : rect(0, 0, 0.5 * width, height);
   // score_2 background
   fill(COLOR_2);
+  (height > width) ? rect(0, 0.5 * height, width, 0.5 * height) : rect(0.5 * width, 0, 0.5 * width, height);
+  
+  // serve indicator
+  push();
+  blendMode(LIGHTEST);
   if (height > width) {
-    rect(0, 0.5 * height, width, 0.5 * height);
+    serve_turn ? image(serve_indicator, 0, 0, width, 0.5 * height) : image(serve_indicator, 0, 0.5 * height);
   } else {
-    rect(0.5 * width, 0, 0.5 * width, height);
+    serve_turn ? image(serve_indicator, 0, 0) : image(serve_indicator, 0.5 * width, 0);
   }
+  pop();
   
   // scores
   fill(255);
@@ -45,10 +49,13 @@ function draw() {
   }
   
   // reset button
+  push();
+  imageMode(CENTER);
   reset_button_diameter = 0.0625 * max(width, height);
   fill(255);
   ellipse(0.5 * width, 0.5 * height, reset_button_diameter);
   image(RESET_SYMBOL, 0.5 * width, 0.5 * height, reset_button_diameter, reset_button_diameter);
+  pop();
 }
 
 function mousePressed() {
@@ -59,14 +66,20 @@ function mousePressed() {
   } else {
     var score_1_clicked = (height > width) ? (mouseY < 0.5 * height) : (mouseX < 0.5 * width);
   
-    if (score_1_clicked) {
-      ++score_1;
-    } else {
-      ++score_2;
+    score_1_clicked ? ++score_1 : ++score_2;
+    
+    if ((score_1 + score_2) % 2 === 0) {
+      serve_turn = !serve_turn;
     }
   }
 }
 
 function windowResized() {
   resizeCanvas(windowWidth, windowHeight);
+  
+  serve_indicator = (height > width) ? createGraphics(windowWidth, 0.5 * windowHeight) : createGraphics(0.5 * windowWidth, windowHeight);
+  serve_indicator.noStroke();
+  serve_indicator.background(255);
+  serve_indicator.fill(0);
+  serve_indicator.ellipse(0.5 * serve_indicator.width, 0.5 * serve_indicator.height, sqrt(0.5 * width * height));
 }
