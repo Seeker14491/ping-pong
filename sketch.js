@@ -1,3 +1,7 @@
+function is_game_over(score_1, score_2) {
+  return (score_1 > 10 || score_2 > 10) && (abs(score_1 - score_2) > 1)
+}
+
 function preload() {
   RESET_SYMBOL = loadImage("assets/appbar.refresh.svg");
 }
@@ -28,16 +32,25 @@ function draw() {
   (height > width) ? rect(0, 0.5 * height, width, 0.5 * height) : rect(0.5 * width, 0, 0.5 * width, height);
   
   // serve indicator
-  push();
-  blendMode(LIGHTEST);
-  var total_score = score_1 + score_2;
-  var serve_indicator_pos = serve_turn != ((floor(total_score / 2) % 2) === 0);
-  if (height > width) {
-    serve_indicator_pos ? image(serve_indicator, 0, 0, width, 0.5 * height) : image(serve_indicator, 0, 0.5 * height);
-  } else {
-    serve_indicator_pos ? image(serve_indicator, 0, 0) : image(serve_indicator, 0.5 * width, 0);
+  if (!is_game_over(score_1, score_2)) {
+    push();
+    blendMode(LIGHTEST);
+    var total_score = score_1 + score_2;
+    var serve_indicator_pos;
+    if ((score_1 + score_2 <= 20)) {
+      // switch every 2 serves
+      serve_indicator_pos = (floor(total_score / 2) % 2) == serve_turn;
+    } else {
+      // switch every serve
+      serve_indicator_pos = total_score % 2 == serve_turn;
+    }
+    if (height > width) {
+      serve_indicator_pos ? image(serve_indicator, 0, 0, width, 0.5 * height) : image(serve_indicator, 0, 0.5 * height);
+    } else {
+      serve_indicator_pos ? image(serve_indicator, 0, 0) : image(serve_indicator, 0.5 * width, 0);
+    }
+    pop();
   }
-  pop();
   
   // scores
   fill(255);
@@ -54,6 +67,7 @@ function draw() {
   push();
   imageMode(CENTER);
   reset_button_diameter = 0.0625 * max(width, height);
+  blendMode(BLEND);
   fill(255);
   ellipse(0.5 * width, 0.5 * height, reset_button_diameter);
   image(RESET_SYMBOL, 0.5 * width, 0.5 * height, reset_button_diameter, reset_button_diameter);
@@ -69,7 +83,7 @@ function mousePressed() {
       score_1 = 0;
       score_2 = 0;
     }
-  } else {
+  } else if (!is_game_over(score_1, score_2)) {
     var score_1_clicked = (height > width) ? (mouseY < 0.5 * height) : (mouseX < 0.5 * width);
   
     score_1_clicked ? ++score_1 : ++score_2;
